@@ -1,0 +1,85 @@
+# Generated from Ankit Kumar's resume (July 2026).
+# Keep searches focused so applications stay relevant.
+env_file: .env.person1
+searches:
+  - keywords: "Generative AI Engineer"
+    location: "Bengaluru"
+  - keywords: "Agentic AI Engineer"
+    location: "Bengaluru"
+  - keywords: "LLM Engineer RAG"
+    location: "Bengaluru"
+  - keywords: "AI ML Engineer Python"
+    location: "Bengaluru"
+  - keywords: "Python Backend Developer FastAPI"
+    location: "Bengaluru"
+  - keywords: "Generative AI Engineer"
+    location: "Remote"
+  - keywords: "Agentic AI Engineer"
+    location: "Remote"
+
+# The listing must mention at least one of these resume-aligned terms.
+include_keywords:
+  - generative ai
+  - gen ai
+  - genai
+  - ai engineer
+  - agentic ai
+  - llm
+  - large language model
+  - rag
+  - langchain
+  - langgraph
+  - crewai
+  - crew ai
+  - azure ai foundry
+  - azure openai
+  - machine learning
+  - artificial intelligence
+  - python
+  - fastapi
+  - backend
+
+# Avoid roles that do not fit the resume or expected experience level.
+exclude_keywords:
+  - internship
+  - fresher
+  - unpaid
+  - data entry
+  - data annotation
+  - sales
+  - business development
+  - frontend only
+  - php developer
+  - android developer
+  - ios developer
+  - 8+ years
+  - 10+ years
+  - 12+ years
+
+# Global limit across all searches in one run.
+max_jobs_per_run: 20
+# Naukri can render skeleton placeholders for a long time on slow connections.
+search_load_timeout_seconds: 60
+search_load_retries: 2
+# Maximum wait after Apply and after every questionnaire Save click.
+post_apply_timeout_seconds: 30
+headless: false
+slow_mo_ms: 300
+# Use the normal installed Chrome instead of Playwright's bundled Chromium.
+browser_channel: chrome
+profile_dir: browser-profile
+history_file: applied_jobs.json
+answers_file: answers.json
+
+# Optional. Set OPENAI_API_KEY in your shell; never put the key in this file.
+openai_model: gpt-4o-mini
+resume_summary: >-
+  Ankit Kumar is a Bengaluru-based GenAI and Agentic AI Engineer with 4 years
+  of backend development experience and 1 year of hands-on AI/GenAI project
+  contribution. Current role: Senior Engineer - Engineering AI/ML at Ascendion
+  since April 2025. Previous backend roles: Mobile Programming from September
+  2024 to March 2025 and Techolution from May 2022 to September 2024. Skills:
+  Python, FastAPI, REST APIs, RAG, Agentic AI, LangChain, LangGraph, CrewAI,
+  Azure AI Foundry, Azure OpenAI, OpenAI, PyTorch, TensorFlow, AWS, Docker,
+  SQL, Java, Redis, RabbitMQ, Jenkins, Git, and backend microservices. B.Tech
+  in Computer Science and Engineering, completed in 2022.

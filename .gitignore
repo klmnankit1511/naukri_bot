@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+.env
+.env.person1
+.env.person2
+.env.person3
+browser-profile/
+browser-profile-person2/
+browser-profile-person3/
+applied_jobs.json
+applied_jobs.person2.json
+applied_jobs.person3.json
+answers.json
+answers.person2.json
+answers.person3.json
+screenshots/
