@@ -11,39 +11,59 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 playwright install chromium
+cp .env.example .env
 cp config.example.yaml config.yaml
 ```
 
-Edit `config.yaml` with your actual roles, locations, and filters. Make sure your Naukri profile and uploaded resume are complete before using the bot.
+Edit `.env` with the active user's credentials and `config.yaml` with their
+roles, locations, filters, and factual resume summary. Make sure the matching
+Naukri profile and uploaded resume are complete before using the bot.
 
-## Three-person setup
+## Single-user setup
 
-This repository has three independent configurations:
+The bot uses one active-user environment and configuration:
 
-- `config.yaml` — your existing configuration
-- `config.person2.yaml` — configuration for person 2
-- `config.person3.yaml` — configuration for person 3
+- `.env` contains credentials and environment settings.
+- `config.yaml` contains searches, filters, paths, and the resume summary.
+- `data/browser/profile/` contains the saved login session.
+- `data/history/applied_jobs.json` contains application history.
+- `data/answers/answers.json` contains approved recruiter-question answers.
 
-Each person has a separate browser session, saved-answer file, application history,
-and environment file. Person 1 uses `.env.person1`, person 2 uses `.env.person2`,
-and person 3 uses `.env.person3`. Edit the searches, filters, and
-`resume_summary` in each file before running it.
-Person 2 credentials belong in `.env.person2`, and person 3 credentials belong
-in `.env.person3`; these private files are ignored by Git. Leaving a credential
-blank makes the bot prompt for it securely in Terminal.
+Changing `.env` credentials alone does not replace an already authenticated
+browser session. Before switching to another person, stop the bot and move the
+existing `data/` directory to a private backup location. Then update `.env` and
+`config.yaml` and run a dry run. The bot will create fresh browser, history, and
+answer data for the new user. Do not reuse one user's history or saved answers
+for another user.
 
 ```bash
-# You
 python naukri_bot.py --config config.yaml
-
-# Person 2
-python naukri_bot.py --config config.person2.yaml
-
-# Person 3
-python naukri_bot.py --config config.person3.yaml
 ```
 
-Add `--submit` only after the correct person has logged in and reviewed a dry run. Do not run two instances for the same person at the same time.
+Add `--submit` only after the active user has logged in and reviewed a dry run.
+Do not run two instances against the same data directory at the same time.
+
+### Generate a configuration from a resume
+
+Pass a user name and a TXT, MD, PDF, or DOCX resume to the generator:
+
+```bash
+python scripts/create_user_config.py "User Name" /path/to/resume.pdf
+```
+
+The generator creates `config.yaml` when it does not exist. If it already
+exists, it creates the next available file such as `config.person2.yaml` or
+`config.person3.yaml`. Each generated person config receives separate browser,
+history, and answer paths, while credentials still come from the shared `.env`.
+Update `.env` for the selected user before running their config. Existing YAML
+files are never overwritten. Always review the generated searches, location,
+keywords, and resume summary before enabling `--submit`.
+
+You can also request a specific unused output file:
+
+```bash
+python scripts/create_user_config.py "User Name" resume.docx --output new-user.yaml
+```
 
 ## Run safely first
 
@@ -64,7 +84,7 @@ python naukri_bot.py --login-mode google
 python naukri_bot.py --login-mode email
 ```
 
-You can optionally provide the phone number through `NAUKRI_MOBILE`. For email login, the bot prompts for `NAUKRI_EMAIL` and a hidden password; credentials are not saved to YAML or application history. Google authorization, OTPs, and CAPTCHAs must be completed by you in the browser. The authenticated session is retained in `browser-profile/`, so later runs normally do not require login. The dry run lists jobs that it *would* apply to without clicking Apply.
+You can optionally provide the phone number through `NAUKRI_MOBILE`. For email login, the bot prompts for `NAUKRI_EMAIL` and a hidden password; credentials are not saved to YAML or application history. Google authorization, OTPs, and CAPTCHAs must be completed by you in the browser. The authenticated session is retained in `data/browser/profile/`, so later runs normally do not require login. The dry run lists jobs that it *would* apply to without clicking Apply.
 
 If Naukri displays “Something went wrong” while requesting an OTP, the site has rejected that OTP request. The bot automatically opens Google sign-in as a fallback. It uses your installed Google Chrome (`browser_channel: chrome`) to reduce login compatibility problems.
 
@@ -104,15 +124,19 @@ NAUKRI_PASSWORD=your-password
 NAUKRI_FRESHNESS_DAYS=1
 ```
 
+The AI prompt records the candidate's preference to answer affirmatively when
+asked whether they are comfortable, willing, open, ready, or able to follow a
+stated work arrangement. It still does not fabricate factual answers such as
+experience, compensation, notice period, dates, qualifications, or work
+authorization.
+
 `NAUKRI_FRESHNESS_DAYS` controls the Freshness filter for every search. Set it
 to `1`, `3`, `7`, `15`, or `30` to select the corresponding “Last N days”
 option. Remove the variable or leave it empty to search without a freshness
 filter.
 
-`NAUKRI_EXPERIENCE_YEARS` in the selected person's environment file controls
-Naukri's experience filter. For example, `NAUKRI_EXPERIENCE_YEARS=1` adds
-`experience=1` to every search URL. Person 2 uses `.env.person2`, and person 3
-uses `.env.person3`.
+`NAUKRI_EXPERIENCE_YEARS` in `.env` controls Naukri's experience filter. For
+example, `NAUKRI_EXPERIENCE_YEARS=1` adds `experience=1` to every search URL.
 
 `NAUKRI_MAX_PAGES` controls pagination for every configured search. Page 1 uses
 the `...-jobs` URL, while later pages use `...-jobs-2`, `...-jobs-3`, and so on.
@@ -120,18 +144,18 @@ Pagination stops at this limit, when Naukri returns an empty page, or when the
 successful-application limit is reached.
 
 To automatically try freshness windows in order (`1`, `3`, `7`, then `15` days)
-until a profile reaches 30 successful applications, run:
+until the active configuration reaches 40 successful applications today, run:
 
 ```bash
-chmod +x run_profile_windows.sh
-./run_profile_windows.sh config.person3.yaml email
-./run_profile_windows.sh config.person2.yaml email
+./scripts/run_profile_windows.sh email
 ```
 
-If no argument is supplied, the script defaults to `config.person3.yaml`.
+If no argument is supplied, the runner uses email login and `config.yaml`.
 
-Set `NAUKRI_TARGET_APPLICATIONS` to change the target. The runner counts the
-profile's existing `applied` history, so rerunning it does not restart at zero.
+Set `NAUKRI_TARGET_APPLICATIONS` to change the default daily target of 40. The
+counter starts at zero on each new local calendar day. Rerunning on the same day
+continues from that day's recorded successes. Older application history remains
+available for duplicate prevention but does not count toward today's target.
 
 Then run:
 
@@ -154,4 +178,4 @@ Search and job-detail pages use condition-based waits rather than fixed delays. 
 
 After clicking Apply—and after each questionnaire Save—the bot waits up to `post_apply_timeout_seconds` for the next drawer message or completion state. This defaults to 30 seconds and does not add an unconditional 30-second delay when the next state becomes ready sooner.
 
-On a search or post-Apply timeout, the bot saves both a screenshot and the rendered HTML under `screenshots/`. Playwright already reads the live DOM in the background, so Selenium is not required for this diagnostic capture.
+On a search or post-Apply timeout, the bot saves both a screenshot and the rendered HTML under `diagnostics/screenshots/`. Playwright already reads the live DOM in the background, so Selenium is not required for this diagnostic capture.

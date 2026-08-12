@@ -1,19 +1,26 @@
 import unittest
 from unittest.mock import patch
+from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from naukri_bot import (
+    ANSWER_SYSTEM_PROMPT,
     AnswerBank,
     Job,
+    application_success_visible,
     answer_matches_options,
     counts_toward_application_limit,
     configured_experience_answer,
+    configured_profile_answer,
     experience_range_option,
     experience_years_from_env,
     freshness_days_from_env,
     max_pages_from_env,
     matches,
+    load_history,
+    load_config,
+    save_history,
     search_url,
     split_answer_choices,
     successful_apply_response,
@@ -21,6 +28,33 @@ from naukri_bot import (
 
 
 class MatchingTests(unittest.TestCase):
+    def test_invalid_config_reports_yaml_location_without_parser_traceback(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "config.yaml"
+            path.write_text("searches:\n  - keywords: python\nbroken text\n", encoding="utf-8")
+            with self.assertRaisesRegex(SystemExit, r"Invalid YAML.*line 4, column 1"):
+                load_config(path)
+
+    def test_ai_prompt_contains_approved_affirmative_work_preference(self):
+        self.assertIn("answer affirmatively", ANSWER_SYSTEM_PROMPT)
+        self.assertIn("hybrid or office work", ANSWER_SYSTEM_PROMPT)
+        self.assertIn("Never infer or invent compensation", ANSWER_SYSTEM_PROMPT)
+
+    def test_new_tab_apply_confirmation_text_is_success(self):
+        confirmation = 'Applied to "Python Lead"\nStart your interview preparation'
+        self.assertTrue(application_success_visible(confirmation.casefold()))
+
+    def test_history_save_creates_single_user_data_directory(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "data" / "history" / "applied_jobs.json"
+            expected = {"job": {"status": "applied"}}
+            save_history(path, expected)
+            self.assertEqual(load_history(path), expected)
+
+    def test_local_timestamp_format_can_be_grouped_by_calendar_day(self):
+        timestamp = datetime.now().astimezone().isoformat(timespec="seconds")
+        self.assertEqual(timestamp[:10], datetime.now().astimezone().date().isoformat())
+
     def test_configured_experience_answers_recruiter_question(self):
         with patch.dict("os.environ", {"NAUKRI_EXPERIENCE_YEARS": "3"}):
             self.assertEqual(

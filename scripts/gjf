@@ -1,0 +1,260 @@
+(.venv) ankitkumar@ANKITs-MacBook-Pro naukri_bot % ./scripts/run_profile_windows.sh
+Running freshness window: Last 1 days (5 remaining)
+AI answers enabled through Azure deployment: gpt-4o-mini
+Experience filter: 1 year(s)
+Freshness filter: Last 1 day
+Pages per search: 4
+Using the saved Naukri login session.
+
+Searching: Generative AI Engineer — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/generative-ai-engineer-jobs-in-bengaluru?k=generative%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 3 rendered job cards on page 1
+HISTORY      GenAI Engineer @ Capgemini — APPLIED
+HISTORY      AI Engineer @ Barclays — EXTERNAL
+HISTORY      Gen AI Developer @ Capgemini — APPLIED
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/generative-ai-engineer-jobs-in-bengaluru-2?k=generative%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Page 2 has no jobs; pagination complete
+
+Searching: Agentic AI Engineer — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/agentic-ai-engineer-jobs-in-bengaluru?k=agentic%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 2 rendered job cards on page 1
+HISTORY      Agentic AI Engineer @ Infosys — APPLIED
+HISTORY      AI Engineer @ Apex Group — APPLIED
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/agentic-ai-engineer-jobs-in-bengaluru-2?k=agentic%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Page 2 repeats an earlier result page; pagination complete
+
+Searching: LLM Engineer RAG — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/llm-engineer-rag-jobs-in-bengaluru?k=llm%20engineer%20rag&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 1 rendered job cards on page 1
+HISTORY      GenAI Developer @ Infosys — APPLIED
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/llm-engineer-rag-jobs-in-bengaluru-2?k=llm%20engineer%20rag&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Page 2 repeats an earlier result page; pagination complete
+
+Searching: AI ML Engineer Python — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/ai-ml-engineer-python-jobs-in-bengaluru?k=ai%20ml%20engineer%20python&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 20 rendered job cards on page 1
+HISTORY      Agentic AI Engineer @ Infosys — APPLIED
+HISTORY      Software Development Engineer @ Apple — EXTERNAL
+SKIP  Senior DevOps Engineer - AWS & AI @ UST (no include keyword matched)
+SKIP  Senior Software Engineer @ Capgemini (no include keyword matched)
+HISTORY      Python Lead @ Capgemini — ALREADY_APPLIED
+SKIP  Senior Software Engineer @ Capgemini (no include keyword matched)
+SKIP  Palantir Data Engineer @ Capgemini (no include keyword matched)
+HISTORY      Applied AI Engineer @ Simbian Ai — EXTERNAL
+SKIP  Senior Software Engineer @ LTM (no include keyword matched)
+HISTORY      Software Development Engineer @ Accenture — EXTERNAL
+HISTORY      Software Development Engineer @ Accenture — EXTERNAL
+HISTORY      Cloud Enablement Engineer - Confluent @ IBM — EXTERNAL
+SKIP  Use Case Engineer - DevOps @ United Layer (no include keyword matched)
+SKIP  SAP PPQM Consultant @ Capgemini (no include keyword matched)
+SKIP  Walk-in || Software Developers Freshers @ ciel (excluded keyword: fresher)
+HISTORY      GenAI Developer @ Infosys — APPLIED
+ALREADY_APPLIED Sap Consultant @ Orcapod Consulting Services — Naukri reports this application already exists
+SKIP  Hiring For Surgery, Enm Coders and Team Lead II up To 14lpa II @ Axis Services (no include keyword matched)
+HISTORY      Developer @ Zetamp Energy Solutions — APPLIED
+HISTORY      Developer @ Viacom India — EXTERNAL
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/ai-ml-engineer-python-jobs-in-bengaluru-2?k=ai%20ml%20engineer%20python&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 20 rendered job cards on page 2
+SKIP  Software Engineer @ Cisco (no include keyword matched)
+SKIP  Software Engineer @ Cisco (no include keyword matched)
+SKIP  Software Development Engineer @ Apple (no include keyword matched)
+HISTORY      Software Engineer @ Capgemini — APPLIED
+SKIP  Technical Services Engineer @ Mongodb (no include keyword matched)
+HISTORY      Custom Software Engineer @ Accenture — EXTERNAL
+SKIP  Software Development Engineer @ Accenture (no include keyword matched)
+SKIP  Software Development Engineer @ Accenture (no include keyword matched)
+SKIP  Jr AI Automation Test Engineer (JavaScript / Java) @ Zycus Infotech (no include keyword matched)
+HISTORY      Application Support Engineer @ Accenture — EXTERNAL
+SKIP  Application Support Engineer @ Accenture (no include keyword matched)
+SKIP  Application Support Engineer @ Accenture (no include keyword matched)
+SKIP  Lead, DCR Application Analyst _Full Stack Developer @ Schneider Electric (no include keyword matched)
+SKIP  Mechanical Design Fabrication Engineer @ Factree Ai (no include keyword matched)
+SKIP  MERN Stack Developer @ Tatpata (no include keyword matched)
+HISTORY      Backend JAVA Developer @ Connect Global Solution — EXTERNAL
+HISTORY      Full Stack Developer @ Toprankers — EXTERNAL
+SKIP  Frontend Developer (Fresher) @ Hireto By Kuvaka Tech (excluded keyword: fresher)
+SKIP  Dot Net Full Stack Professional @ Krazy Mantra It (no include keyword matched)
+HISTORY      IT Global Talent Acquisition professional @ Indium Global Services — EXTERNAL
+PAGE 3/4
+SEARCH_URL https://www.naukri.com/ai-ml-engineer-python-jobs-in-bengaluru-3?k=ai%20ml%20engineer%20python&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 20 rendered job cards on page 3
+SKIP  Software Engineer @ Cisco (no include keyword matched)
+SKIP  Software Engineer @ Cisco (no include keyword matched)
+HISTORY      Data Engineer @ Capgemini — APPLIED
+ALREADY_APPLIED Data Engineer @ Capgemini — Naukri reports this application already exists
+EXTERNAL     ML Engineer @ eka.care — company-site application skipped
+SKIP  Senior Site Reliability Engineer - Support @ FIS (no include keyword matched)
+SKIP  Playwright Automation Test Engineer @ Capgemini (no include keyword matched)
+EXTERNAL     ML Research Engineer - Post-training (LLMs) @ eka.care — company-site application skipped
+SKIP  Application Support Engineer @ Accenture (no include keyword matched)
+SKIP  AI Automation Engineer - Test Generation & Agent Systems (Sr Staff) @ Equinix (no include keyword matched)
+EXTERNAL     Data Engineer @ Quantanxt Technologies — company-site application skipped
+EXTERNAL     Software Engineer (Platform/Backend) - ClickHouse @ Omnissa — company-site application skipped
+EXTERNAL     Apprentice Trainee (Software Developer) @ Philips — company-site application skipped
+EXTERNAL     Full-Stack Developer (Backend-Focused) - Python Stack @ Hireto By Kuvaka Tech — company-site application skipped
+EXTERNAL     Graduate Trainee @ Calix — company-site application skipped
+SKIP  Business Analyst @ Accenture (no include keyword matched)
+SKIP  WordPress Developer @ Nexevo (no include keyword matched)
+SKIP  Business Analyst - Cards @ Embarkgcc Services (no include keyword matched)
+SKIP  MEAN Stack Developer @ Tatpata (no include keyword matched)
+SKIP  Sr Campaign Analyst @ Quation (no include keyword matched)
+PAGE 4/4
+SEARCH_URL https://www.naukri.com/ai-ml-engineer-python-jobs-in-bengaluru-4?k=ai%20ml%20engineer%20python&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 20 rendered job cards on page 4
+SKIP  Software Development Engineer in Test @ Apple (no include keyword matched)
+SKIP  CloudOps Engineer @ Unilog (no include keyword matched)
+EXTERNAL     Machine Learning Engineer @ Biz-metric India — company-site application skipped
+SKIP  Software Engineer - APM @ IonIdea (no include keyword matched)
+SKIP  MEAN Stack Developer @ Tatpata (no include keyword matched)
+SKIP  Front End Developer @ Techbulls (no include keyword matched)
+SKIP  Contract Staff - CSV and IT @ Apotex (no include keyword matched)
+SKIP  L2 Support System Administrator @ ALOIS Solutions (no include keyword matched)
+SKIP  Application Support Engineer @ Accenture (no include keyword matched)
+EXTERNAL     Application Support Engineer @ Accenture — company-site application skipped
+SKIP  Application Support Engineer @ Accenture (no include keyword matched)
+SKIP  Packaged/SaaS Application Engineer @ Accenture (no include keyword matched)
+SKIP  PPSM New Associate @ Accenture (no include keyword matched)
+SKIP  Application Support Engineer @ Accenture (no include keyword matched)
+SKIP  Oracle Fusion Financials Consultant @ Infosys (no include keyword matched)
+SKIP  Full Stack Dot Net Developer @ Infolog Solutions (no include keyword matched)
+SKIP  Technology Consulting Practitioner @ Accenture (no include keyword matched)
+SKIP  Sr Officer - CAT - SPARC @ Axis Max Life Insurance (no include keyword matched)
+SKIP  Flutter Developer @ Coderound Ai (no include keyword matched)
+SKIP  SDE 1 @ Smartcoin (no include keyword matched)
+
+Searching: Python Backend Developer FastAPI — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/python-backend-developer-fastapi-jobs-in-bengaluru?k=python%20backend%20developer%20fastapi&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Page 1 has no jobs; pagination complete
+
+Searching: Generative AI Engineer — Remote
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/generative-ai-engineer-jobs-in-remote?k=generative%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 3 rendered job cards on page 1
+HISTORY      GenAI Engineer @ Capgemini — APPLIED
+HISTORY      AI Engineer @ Barclays — EXTERNAL
+HISTORY      Gen AI Developer @ Capgemini — APPLIED
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/generative-ai-engineer-jobs-in-remote-2?k=generative%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Page 2 has no jobs; pagination complete
+
+Searching: Agentic AI Engineer — Remote
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/agentic-ai-engineer-jobs-in-remote?k=agentic%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Found 7 rendered job cards on page 1
+APPLIED      GenAI & Agentic AI Engineer @ Capgemini — application submitted
+APPLICATION_COUNT 1/5
+HISTORY      Agentic AI Engineer @ Infosys — APPLIED
+HISTORY      AI Engineer @ Apex Group — APPLIED
+HISTORY      GenAI Engineer @ Capgemini — APPLIED
+HISTORY      AI Engineer @ Barclays — EXTERNAL
+EXTERNAL     AI Engineer @ Zorba Ai — company-site application skipped
+SKIP  Professional Business Development Team @ Innvonix Tech Solutions (excluded keyword: sales)
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/agentic-ai-engineer-jobs-in-remote-2?k=agentic%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=1
+Page 2 has no jobs; pagination complete
+Running freshness window: Last 3 days (4 remaining)
+AI answers enabled through Azure deployment: gpt-4o-mini
+Experience filter: 1 year(s)
+Freshness filter: Last 3 days
+Pages per search: 4
+Using the saved Naukri login session.
+
+Searching: Generative AI Engineer — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/generative-ai-engineer-jobs-in-bengaluru?k=generative%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Found 1 rendered job cards on page 1
+APPLIED      Scheduled Hiring Drive - 22nd August | AI/ML Agent Developer Opportuni @ Movate Technologies — application submitted
+APPLICATION_COUNT 1/4
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/generative-ai-engineer-jobs-in-bengaluru-2?k=generative%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Page 2 repeats an earlier result page; pagination complete
+
+Searching: Agentic AI Engineer — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/agentic-ai-engineer-jobs-in-bengaluru?k=agentic%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Found 3 rendered job cards on page 1
+HISTORY      Agentic AI Engineer @ Infosys — APPLIED
+HISTORY      AI Engineer @ Apex Group — APPLIED
+HISTORY      Scheduled Hiring Drive - 22nd August | AI/ML Agent Developer Opportuni @ Movate Technologies — APPLIED
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/agentic-ai-engineer-jobs-in-bengaluru-2?k=agentic%20ai%20engineer&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Page 2 repeats an earlier result page; pagination complete
+
+Searching: LLM Engineer RAG — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/llm-engineer-rag-jobs-in-bengaluru?k=llm%20engineer%20rag&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Found 1 rendered job cards on page 1
+HISTORY      GenAI Developer @ Infosys — APPLIED
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/llm-engineer-rag-jobs-in-bengaluru-2?k=llm%20engineer%20rag&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Page 2 repeats an earlier result page; pagination complete
+
+Searching: AI ML Engineer Python — Bengaluru
+PAGE 1/4
+SEARCH_URL https://www.naukri.com/ai-ml-engineer-python-jobs-in-bengaluru?k=ai%20ml%20engineer%20python&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Found 20 rendered job cards on page 1
+HISTORY      Agentic AI Engineer @ Infosys — APPLIED
+HISTORY      Software Development Engineer @ Apple — EXTERNAL
+SKIP  Senior DevOps Engineer - AWS & AI @ UST (no include keyword matched)
+SKIP  Senior Software Engineer @ Capgemini (no include keyword matched)
+SKIP  Senior Software Engineer @ Capgemini (no include keyword matched)
+HISTORY      Python Lead @ Capgemini — ALREADY_APPLIED
+SKIP  Senior Software Engineer @ Capgemini (no include keyword matched)
+SKIP  Palantir Data Engineer @ Capgemini (no include keyword matched)
+HISTORY      Applied AI Engineer @ Simbian Ai — EXTERNAL
+SKIP  Senior Software Engineer @ LTM (no include keyword matched)
+HISTORY      Cloud Enablement Engineer - Confluent @ IBM — EXTERNAL
+SKIP  Use Case Engineer - DevOps @ United Layer (no include keyword matched)
+SKIP  Senior Software Engineer ( React ) @ Hatica (no include keyword matched)
+SKIP  Walk-in || Software Developers Freshers @ ciel (excluded keyword: fresher)
+HISTORY      GenAI Developer @ Infosys — APPLIED
+SKIP  Hiring For Surgery, Enm Coders and Team Lead II up To 14lpa II @ Axis Services (no include keyword matched)
+HISTORY      Developer @ Zetamp Energy Solutions — APPLIED
+SKIP  MERN Developer @ Nasu Group (no include keyword matched)
+HISTORY      Developer @ Viacom India — EXTERNAL
+SKIP  Developer @ Now Media (no include keyword matched)
+PAGE 2/4
+SEARCH_URL https://www.naukri.com/ai-ml-engineer-python-jobs-in-bengaluru-2?k=ai%20ml%20engineer%20python&nignbevent_src=jobsearchDeskGNB&experience=1&jobAge=3
+Found 20 rendered job cards on page 2
+SKIP  Software Engineer @ Cisco (no include keyword matched)
+SKIP  Software Development Engineer @ Apple (no include keyword matched)
+Answering from resume/AI: Are you based out of Bangalore as 2nd round is going to be in person ( Mandatory ) -> Yes
+
+Recruiter question: This is hybrid model, 2 days from office, hope you are comfortable ?
+Your answer (or 'skip job'): yes
+Answering from user: This is hybrid model, 2 days from office, hope you are comfortable ? -> yes
+
+Recruiter question: What is expected ?
+Your answer (or 'skip job'): good and tough work
+Answering from user: What is expected ? -> good and tough work
+APPLIED      Software Engineer 1 @ CME Group — application submitted
+APPLICATION_COUNT 2/4
+SKIP  Technical Services Engineer @ Mongodb (no include keyword matched)
+HISTORY      Software Development Engineer @ Accenture — EXTERNAL
+HISTORY      Software Development Engineer @ Accenture — EXTERNAL
+SKIP  Software Development Engineer @ Accenture (no include keyword matched)
+SKIP  Software Engineer @ Creative Hands HR (no include keyword matched)
+SKIP  Software Engineer @ Ixana (no include keyword matched)
+SKIP  Jr AI Automation Test Engineer (JavaScript / Java) @ Zycus Infotech (no include keyword matched)
+HISTORY      Application Support Engineer @ Accenture — EXTERNAL
+SKIP  Mechanical Design Fabrication Engineer @ Factree Ai (no include keyword matched)
+SKIP  Software Development Engineer 2 @ Techbulls (no include keyword matched)
+APPLIED      Junior Python Developer @ NetM Corporate Solutions — application submitted
+APPLICATION_COUNT 3/4
+SKIP  SAP PPQM Consultant @ Capgemini (no include keyword matched)
+HISTORY      Sap Consultant @ Orcapod Consulting Services — ALREADY_APPLIED
+APPLIED      Backend Engineer | Scheduled Drive on 22nd August (Saturday) @ Movate Technologies — application submitted
+APPLICATION_COUNT 4/4
+
+RUN_LIMIT Reached max_jobs_per_run=4 successful applications; stopping this run.
+Target reached: 40 successful applications
+(.venv) ankitkumar@ANKITs-MacBook-Pro naukri_bot % 

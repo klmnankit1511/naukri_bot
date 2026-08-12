@@ -23,8 +23,8 @@ post_apply_timeout_seconds: 30
 headless: false
 slow_mo_ms: 250
 browser_channel: chrome
-profile_dir: browser-profile
-history_file: applied_jobs.json
-answers_file: answers.json
+profile_dir: data/browser/profile
+history_file: data/history/applied_jobs.json
+answers_file: data/answers/answers.json
 openai_model: gpt-4o-mini
 resume_summary: "Paste a concise, factual resume summary here."

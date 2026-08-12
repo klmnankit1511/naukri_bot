@@ -42,7 +42,13 @@ class Job:
 def load_config(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise SystemExit(f"Config not found: {path}. Copy config.example.yaml to config.yaml.")
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as exc:
+        mark = getattr(exc, "problem_mark", None)
+        location = f" line {mark.line + 1}, column {mark.column + 1}" if mark else ""
+        problem = getattr(exc, "problem", None) or "invalid YAML syntax"
+        raise SystemExit(f"Invalid YAML in {path} at{location}: {problem}") from None
     if not data.get("searches"):
         raise SystemExit("config.yaml needs at least one item under 'searches'.")
     return data
@@ -58,6 +64,7 @@ def load_history(path: Path) -> dict[str, Any]:
 
 
 def save_history(path: Path, history: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
@@ -70,6 +77,20 @@ QUESTION_BOILERPLATE = {
     "in", "is", "many", "mention", "of", "please", "select", "specify", "the",
     "to", "what", "which", "with", "you", "your", "year", "years", "experience",
 }
+
+
+ANSWER_SYSTEM_PROMPT = (
+    "Answer a job-application question using only explicit facts in the resume summary. "
+    "The candidate has explicitly confirmed that they are comfortable with recruiter "
+    "requirements and work arrangements. For questions asking whether they are willing, "
+    "comfortable, open, ready, or able to follow a stated arrangement—including hybrid or "
+    "office work, shifts, travel, or relocation—answer affirmatively. Use 'Yes' when there "
+    "are no options, or the exact affirmative option label when options are supplied. "
+    "Never infer or invent compensation, notice period, dates, work authorization, "
+    "citizenship, qualifications, or experience. If any such factual answer is unsupported, "
+    "return null. For multi-select, return every supported choice as a JSON array. "
+    "Return JSON only: {\"answer\": string|string[]|null}."
+)
 
 
 def question_subject_tokens(value: str) -> set[str]:
@@ -135,14 +156,7 @@ class AnswerAssistant:
             messages = [
                     {
                         "role": "system",
-                        "content": (
-                            "Answer a job-application question using only explicit facts in the resume summary. "
-                            "Never infer or invent compensation, notice period, dates, "
-                            "work authorization, relocation, or personal facts. If unsupported, return null. "
-                            "If options are supplied, answers must exactly match option labels. "
-                            "For multi-select, return every supported choice as a JSON array. "
-                            "Return JSON only: {\"answer\": string|string[]|null}."
-                        ),
+                        "content": ANSWER_SYSTEM_PROMPT,
                     },
                     {
                         "role": "user",
@@ -192,7 +206,7 @@ class AnswerAssistant:
     async def suggest(self, question: str, options: list[str], multi_select: bool = False) -> str | None:
         # These facts must come directly from the user even when a model is configured.
         sensitive = (
-            "salary", "compensation", "notice period", "last working", "join", "relocat",
+            "salary", "compensation", "notice period", "last working", "join",
             "visa", "authoriz", "citizen", "expected ctc", "current ctc",
         )
         if any(term in question.casefold() for term in sensitive):
@@ -512,8 +526,8 @@ async def visible_first(page: Page, selector: str):
 
 
 async def capture_diagnostic(page: Page, label: str) -> str:
-    directory = Path("screenshots")
-    directory.mkdir(exist_ok=True)
+    directory = Path("diagnostics/screenshots")
+    directory.mkdir(parents=True, exist_ok=True)
     safe_label = re.sub(r"[^a-z0-9_-]+", "-", label.casefold()).strip("-")[:60]
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     base = directory / f"{stamp}-{safe_label}"
@@ -1100,14 +1114,27 @@ async def handle_questionnaire(
 
 
 async def wait_for_post_apply_state(page: Page, timeout_ms: int) -> str:
-    """Wait for direct success, profile prompt, or a usable recruiter question."""
+    """Wait for success in any tab, a profile prompt, or a recruiter question."""
     deadline = asyncio.get_running_loop().time() + timeout_ms / 1000
     while asyncio.get_running_loop().time() < deadline:
         try:
+            # Some direct applications open Naukri's `/myapply/saveApply`
+            # confirmation in a new tab. Check every tab before inspecting the
+            # original job-detail page for an inline questionnaire.
+            for candidate_page in page.context.pages:
+                if candidate_page.is_closed():
+                    continue
+                if candidate_page is not page and "/myapply/" not in candidate_page.url.casefold():
+                    continue
+                candidate_body = (
+                    await candidate_page.locator("body").inner_text(timeout=2_000)
+                ).casefold()
+                if await application_succeeded(candidate_page, candidate_body):
+                    return "applied"
             body = (await page.locator("body").inner_text()).casefold()
             if "application was not accepted due to incomplete information" in body:
                 return "incomplete"
-            if await application_succeeded(page, body) or await visible_applied_status(page):
+            if await visible_applied_status(page):
                 return "applied"
             later = page.get_by_text(re.compile(r"^(i['’]?ll do it later|do it later|skip)$", re.I)).first
             if await later.count() and await later.is_visible():
@@ -1132,6 +1159,7 @@ async def apply_to_job(
     assistant: AnswerAssistant,
     post_apply_timeout_ms: int,
 ) -> tuple[str, str]:
+    existing_pages = set(context.pages)
     page = await context.new_page()
     try:
         detail_timeout_ms = 60_000
@@ -1171,7 +1199,11 @@ async def apply_to_job(
     except PlaywrightTimeoutError:
         return "error", "page timed out"
     finally:
-        await page.close()
+        # Close the job-detail page and any confirmation popup it opened, but
+        # preserve the search page and other tabs that existed before this job.
+        for owned_page in list(context.pages):
+            if owned_page not in existing_pages and not owned_page.is_closed():
+                await owned_page.close()
 
 
 def counts_toward_application_limit(status: str) -> bool:
@@ -1182,16 +1214,6 @@ def counts_toward_application_limit(status: str) -> bool:
 async def run(args: argparse.Namespace) -> int:
     load_dotenv()
     config = load_config(Path(args.config))
-    profile_env_file = str(config.get("env_file", "")).strip()
-    if profile_env_file:
-        profile_env_path = Path(profile_env_file)
-        if not profile_env_path.exists():
-            raise SystemExit(
-                f"Profile environment file not found: {profile_env_path}. "
-                f"Create it from {profile_env_path}.example."
-            )
-        # A person's dedicated credentials must take precedence over the shared .env.
-        load_dotenv(profile_env_path, override=True)
     history_path = Path(config.get("history_file", "applied_jobs.json"))
     history = load_history(history_path)
     answer_bank = AnswerBank(Path(config.get("answers_file", "answers.json")))
@@ -1225,7 +1247,9 @@ async def run(args: argparse.Namespace) -> int:
 
     async with async_playwright() as playwright:
         launch_options: dict[str, Any] = {
-            "user_data_dir": str(Path(config.get("profile_dir", "browser-profile")).resolve()),
+            "user_data_dir": str(
+                Path(config.get("profile_dir", "data/browser/profile")).resolve()
+            ),
             "headless": bool(config.get("headless", False)),
             "slow_mo": int(config.get("slow_mo_ms", 250)),
         }
@@ -1309,7 +1333,15 @@ async def run(args: argparse.Namespace) -> int:
                         print(f"{status.upper():<12} {job.title} @ {job.company} — {detail}")
                         # Do not suppress future attempts after an error or manual-question stop.
                         if status in {"applied", "already_applied", "skipped", "external"}:
-                            history[job.key] = {"title": job.title, "company": job.company, "url": job.url, "status": status}
+                            history[job.key] = {
+                                "title": job.title,
+                                "company": job.company,
+                                "url": job.url,
+                                "status": status,
+                                "processed_at": datetime.now().astimezone().isoformat(
+                                    timespec="seconds"
+                                ),
+                            }
                             save_history(history_path, history)
                         if counts_toward_application_limit(status):
                             applied_count += 1
