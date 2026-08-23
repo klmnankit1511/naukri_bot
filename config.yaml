@@ -1,162 +1,276 @@
-# searches:
-#   - keywords: "AI ML Engineer Python"
-#     location: "Bengaluru"
-#   - keywords: "Python Backend Developer FastAPI"
-#     location: "Bengaluru"
-
-# # The listing must mention at least one of these resume-aligned terms.
-# include_keywords:
-#   - generative ai
-#   - gen ai
-#   - genai
-#   - ai engineer
-#   - agentic ai
-#   - llm
-#   - large language model
-#   - rag
-#   - langchain
-#   - langgraph
-#   - crewai
-#   - crew ai
-#   - azure ai foundry
-#   - azure openai
-#   - machine learning
-#   - artificial intelligence
-#   - python
-#   - fastapi
-#   - backend
-
-# # Avoid roles that do not fit the resume or expected experience level.
-# exclude_keywords:
-#   - internship
-#   - fresher
-#   - unpaid
-#   - data entry
-#   - data annotation
-#   - sales
-#   - business development
-#   - frontend only
-#   - php developer
-#   - android developer
-#   - ios developer
-#   - 8+ years
-#   - 10+ years
-#   - 12+ years
-
-# # Global limit across all searches in one run.
-# max_jobs_per_run: 20
-# # Naukri can render skeleton placeholders for a long time on slow connections.
-# search_load_timeout_seconds: 60
-# search_load_retries: 2
-# # Maximum wait after Apply and after every questionnaire Save click.
-# post_apply_timeout_seconds: 30
-# headless: false
-# slow_mo_ms: 300
-# # Use the normal installed Chrome instead of Playwright's bundled Chromium.
-# browser_channel: chrome
-# profile_dir: data/browser/profile
-# history_file: data/history/applied_jobs.json
-# answers_file: data/answers/answers.json
-
-# # Optional. Set OPENAI_API_KEY in your shell; never put the key in this file.
-# openai_model: gpt-4o-mini
-# resume_summary: >-
-#   Ankit Kumar is a Bengaluru-based GenAI and Agentic AI Engineer with 4 years
-#   of backend development experience and 1 year of hands-on AI/GenAI project
-#   contribution. Current role: Senior Engineer - Engineering AI/ML at Ascendion
-#   since April 2025. Previous backend roles: Mobile Programming from September
-#   2024 to March 2025 and Techolution from May 2022 to September 2024. Skills:
-#   Python, FastAPI, REST APIs, RAG, Agentic AI, LangChain, LangGraph, CrewAI,
-#   Azure AI Foundry, Azure OpenAI, OpenAI, PyTorch, TensorFlow, AWS, Docker,
-#   SQL, Java, Redis, RabbitMQ, Jenkins, Git, and backend microservices. B.Tech
-#   in Computer Science and Engineering, completed in 2022.
-
-
-
 searches:
+  - keywords: "AI ML Engineer Python"
+    location: "Bengaluru"
+  - keywords: "Python Backend Developer"
+    location: "Bengaluru"
+  - keywords: "Senior Backend Developer"
+    location: "Bengaluru"
+  - keywords: "AI ML Engineer Python"
+    location: "Remote"
+  - keywords: "Python Backend Developer"
+    location: "Remote"
+  - keywords: "Senior Backend Developer"
+    location: "Remote"
 
-- keywords: "Java Backend Developer Spring Boot"
-  location: "Bengaluru"
 
-- keywords: "Java Developer Spring Boot Hibernate"
-  location: "Bengaluru"
-
-- keywords: "Backend Developer Java REST API"
-  location: "Bengaluru"
-
-- keywords: "Software Engineer Java Spring Boot"
-  location: "Bengaluru"
-
+# The listing must mention at least one of these resume-aligned terms.
 include_keywords:
+  - generative ai
+  - gen ai
+  - genai
+  - ai engineer
+  - agentic ai
+  - llm
+  - large language model
+  - rag
+  - langchain
+  - langgraph
+  - crewai
+  - crew ai
+  - azure ai foundry
+  - azure openai
+  - machine learning
+  - artificial intelligence
+  - python
+  - fastapi
+  - backend
 
-- java
-- spring boot
-- spring
-- spring mvc
-- spring data jpa
-- hibernate
-- jpa
-- rest api
-- restful api
-- backend
-- backend developer
-- java developer
-- software engineer
-- microservices
-- postgresql
-- mysql
-- sql
-- docker
-- docker compose
-- maven
-
+# Avoid roles that do not fit the resume or expected experience level.
 exclude_keywords:
+  - internship
+  - fresher
+  - unpaid
+  - data entry
+  - data annotation
+  - sales
+  - business development
+  - frontend only
+  - php developer
+  - android developer
+  - ios developer
+  - 8+ years
+  - 10+ years
+  - 12+ years
+  - internship
+  - intern
+  - fresher
+  - data analyst
+  - data entry
+  - sales
+  - business development
+  - content writer
+  - frontend only
+  - php developer
+  - android developer
+  - ios developer
+  - manual tester
+  - customer support
 
-- internship
-- intern
-- fresher
-- unpaid
-- data entry
-- data annotation
-- sales
-- business development
-- frontend only
-- php developer
-- android developer
-- ios developer
-- python only
-- data scientist
-- data analyst
-- machine learning
-- ai researcher
-
+# Global limit across all searches in one run.
 max_jobs_per_run: 20
-
+# Naukri can render skeleton placeholders for a long time on slow connections.
 search_load_timeout_seconds: 60
 search_load_retries: 2
-
+# Maximum wait after Apply and after every questionnaire Save click.
 post_apply_timeout_seconds: 30
+post_apply_success_wait_seconds: 3
+between_jobs_delay_seconds: 2
+external_tab_wait_seconds: 2
 headless: false
 slow_mo_ms: 300
-
+# Use the normal installed Chrome instead of Playwright's bundled Chromium.
 browser_channel: chrome
 profile_dir: data/browser/profile
 history_file: data/history/applied_jobs.json
 answers_file: data/answers/answers.json
 
+# Optional. Set OPENAI_API_KEY in your shell; never put the key in this file.
 openai_model: gpt-4o-mini
-
 resume_summary: >-
-  Amisha Soni is a Bangalore-based Software Engineer with approximately
-  3 years of professional backend development experience. She has been
-  working at Tata Consultancy Services (TCS) as a Software Engineer for
-  the AVIVA client since October 2023. Her primary expertise is Java,
-  Spring Boot, Spring MVC, Spring Data JPA, Hibernate, REST APIs,
-  PostgreSQL, MySQL, Docker, Maven, Git, and backend application
-  development. She has developed and maintained backend services for
-  life and annuity insurance products, designed RESTful APIs, optimized
-  JPA and SQL queries, resolved N+1 query issues, and improved premium
-  calculation performance by 10%. She also has experience with Docker,
-  Docker Compose, exception handling, input validation, DTO-based
-  architecture, logging, monitoring, and root cause analysis.
-  Her education is a B.Tech in Computer Science and Engineering.
+  Ankit Kumar is a Bengaluru-based GenAI and Agentic AI Engineer with 4 years
+  of backend development experience and 1 year of hands-on AI/GenAI project
+  contribution. Current role: Senior Engineer - Engineering AI/ML at Ascendion
+  since April 2025. Previous backend roles: Mobile Programming from September
+  2024 to March 2025 and Techolution from May 2022 to September 2024. Skills:
+  Python, FastAPI, REST APIs, RAG, Agentic AI, LangChain, LangGraph, CrewAI,
+  Azure AI Foundry, Azure OpenAI, OpenAI, PyTorch, TensorFlow, AWS, Docker,
+  SQL, Java, Redis, RabbitMQ, Jenkins, Git, and backend microservices. B.Tech
+  in Computer Science and Engineering, completed in 2022.
+
+
+
+# searches:
+#
+# - keywords: "Java Backend Developer Spring Boot"
+#   location: "Bengaluru"
+#
+# - keywords: "Java Developer Spring Boot Hibernate"
+#   location: "Bengaluru"
+#
+# - keywords: "Backend Developer Java REST API"
+#   location: "Bengaluru"
+#
+# - keywords: "Software Engineer Java Spring Boot"
+#   location: "Bengaluru"
+#
+# include_keywords:
+#
+# - java
+# - spring boot
+# - spring
+# - spring mvc
+# - spring data jpa
+# - hibernate
+# - jpa
+# - rest api
+# - restful api
+# - backend
+# - backend developer
+# - java developer
+# - software engineer
+# - microservices
+# - postgresql
+# - mysql
+# - sql
+# - docker
+# - docker compose
+# - maven
+#
+# exclude_keywords:
+#
+# - internship
+# - intern
+# - fresher
+# - unpaid
+# - data entry
+# - data annotation
+# - sales
+# - business development
+# - frontend only
+# - php developer
+# - android developer
+# - ios developer
+# - python only
+# - data scientist
+# - data analyst
+# - ai researcher
+#
+# max_jobs_per_run: 30
+#
+# search_load_timeout_seconds: 60
+# search_load_retries: 2
+#
+# post_apply_timeout_seconds: 30
+# Keep the success/confirmation page available briefly before closing its tab.
+# post_apply_success_wait_seconds: 5
+# JSON Lines file containing every browser navigation and apply-response URL.
+# debug_url_log: data/debug/opened_urls.jsonl
+# headless: false
+# slow_mo_ms: 300
+#
+# browser_channel: chrome
+# profile_dir: data/browser/profile
+# history_file: data/history/applied_jobs.json
+# answers_file: data/answers/answers.json
+#
+# openai_model: gpt-4o-mini
+#
+# resume_summary: >-
+#   Amisha Soni is a Bangalore-based Software Engineer with approximately
+#   3 years of professional backend development experience. She has been
+#   working at Tata Consultancy Services (TCS) as a Software Engineer for
+#   the AVIVA client since October 2023. Her primary expertise is Java,
+#   Spring Boot, Spring MVC, Spring Data JPA, Hibernate, REST APIs,
+#   PostgreSQL, MySQL, Docker, Maven, Git, and backend application
+#   development. She has developed and maintained backend services for
+#   life and annuity insurance products, designed RESTful APIs, optimized
+#   JPA and SQL queries, resolved N+1 query issues, and improved premium
+#   calculation performance by 10%. She also has experience with Docker,
+#   Docker Compose, exception handling, input validation, DTO-based
+#   architecture, logging, monitoring, and root cause analysis.
+#   Her education is a B.Tech in Computer Science and Engineering.
+
+
+# searches:
+#   - keywords: "Software Engineer Python "
+#     location: "Bengaluru"
+#   - keywords: "Python Developer"
+#     location: "Bengaluru"
+#   - keywords: "Machine Learning Engineer Python"
+#     location: "Bengaluru"
+#   - keywords: "AI Engineer"
+#     location: "Bengaluru"
+#   - keywords: "Software Engineer"
+#     location: "Any"
+#   - keywords: "Python Developer"
+#     location: "Any"
+#
+# include_keywords:
+#   - python
+#   - embedded
+#   - fastapi
+#   - machine learning
+#   - pytorch
+#   - artificial intelligence
+# exclude_keywords:
+#   - senior
+#   - intern
+#   - internship
+#   - trainee
+#   - fresher
+#   - data analyst
+#   - business analyst
+#   - data annotation
+#   - content
+#   - sales
+#   - marketing
+#   - support engineer
+#   - technical support
+#   - frontend
+#   - react
+#   - node.js
+#   - java developer
+#   - odoo
+#   - erp implementation
+#
+# max_jobs_per_run: 30
+# search_load_timeout_seconds: 60
+# search_load_retries: 2
+# post_apply_timeout_seconds: 30
+# between_jobs_delay_seconds: 8
+# headless: false
+# slow_mo_ms: 250
+# browser_channel: chrome
+#
+# These paths must stay unique for each person.
+# profile_dir: data/browser/profile
+# history_file: data/history/applied_jobs.json
+# answers_file: data/answers/answers.json
+#
+# openai_model: gpt-4o-mini
+# resume_summary: >-
+#   Seema Horo is a Software Engineer at Tata Advanced Systems since July 2025,
+#   developing safety-critical embedded software in Python and C++ for avionics
+#   subsystems. She implements Linux user-space modules, IOCTL APIs, multithreaded
+#   communication layers, UART, GPIO and Timer drivers, and RTOS modules for
+#   MALE-class UAV systems. She uses perf, valgrind and gprof for system profiling,
+#   and JTAG and logic analyzers for hardware debugging. She creates UML diagrams,
+#   maintains requirement traceability under DO-178C and DO-254 processes, and
+#   supports SIL/HIL validation for deterministic real-time execution. She was an
+#   Assistant System Engineer at Tata Consultancy Services from November 2021 to
+#   September 2022, where she resolved more than 300 technical issues using backend
+#   debugging, log analysis and workflow optimization, and worked with APIs, SQL
+#   automation and system communication modules. She earned an M.Tech in Artificial
+#   Intelligence from IIT Patna in 2025 with a CGPA of 7.5/10 and a B.Tech in
+#   Computer Science from Ramgarh Engineering College in 2021 with a CGPA of
+#   7.89/10. Her skills include Python, C++, SQL, Flask, FastAPI, SQLAlchemy,
+#   Pydantic, PyTorch, CNNs, GDB, AWS, Git, CMake, GoogleTest, Elasticsearch, OOP,
+#   design patterns, UML and requirement traceability. Her multimodal early disease
+#   detection project used Python, PyTorch, NumPy and Pandas to combine CNN-based
+#   MRI features with clinical text embeddings. Her blockchain-security project
+#   used LangChain, LlamaIndex, Transformers, RAG and vector embeddings for smart
+#   contract anomaly detection. She has solved more than 350 LeetCode problems and
+#   conducted an AI workshop for more than 300 students. She is based in Bangalore,
+#   Karnataka. Do not infer salary, notice period, availability, relocation
+#   preference, work authorization, or facts not stated here; ask the user when an
+#   application requires them.

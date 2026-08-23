@@ -1,0 +1,29 @@
+name: Daily ordered profile run
+
+on:
+  schedule:
+    # 09:00 Asia/Kolkata (GitHub cron is UTC).
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  enqueue-profiles:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Queue /1, /2, and /3 in order
+        env:
+          API_BASE_URL: ${{ secrets.NAUKRI_API_BASE_URL }}
+          API_KEY: ${{ secrets.NAUKRI_API_KEY }}
+        run: |
+          set -euo pipefail
+          for person in 1 2 3; do
+            curl --fail --silent --show-error \
+              --retry 3 --retry-all-errors \
+              --request POST \
+              --header "x-api-key: ${API_KEY}" \
+              "${API_BASE_URL}/${person}"
+            echo
+          done

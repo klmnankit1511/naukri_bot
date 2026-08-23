@@ -15,7 +15,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote, urlparse
 
 import yaml
 from dotenv import load_dotenv
@@ -66,6 +66,46 @@ def load_history(path: Path) -> dict[str, Any]:
 def save_history(path: Path, history: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def persistent_path(value: str | Path) -> Path:
+    """Resolve relative state paths below the optional Azure persistent root."""
+    path = Path(value)
+    data_root = os.environ.get("NAUKRI_DATA_ROOT", "").strip()
+    if data_root and not path.is_absolute():
+        return Path(data_root) / path
+    return path
+
+
+def append_url_debug_event(
+    path: Path, event: str, url: str, status: int | None = None
+) -> None:
+    """Append browser navigation evidence for later debugging."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    record: dict[str, Any] = {
+        "timestamp": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "event": event,
+        "url": url,
+    }
+    if status is not None:
+        record["status"] = status
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+
+def enable_url_debug_log(context: BrowserContext, path: Path) -> None:
+    """Log every navigation request and every Naukri apply response."""
+
+    def observe_request(request) -> None:
+        if request.is_navigation_request():
+            append_url_debug_event(path, "navigation", request.url)
+
+    def observe_response(response) -> None:
+        if is_naukri_save_apply_url(response.url):
+            append_url_debug_event(path, "apply_response", response.url, response.status)
+
+    context.on("request", observe_request)
+    context.on("response", observe_response)
 
 
 def normalize_question(value: str) -> str:
@@ -298,7 +338,7 @@ def search_url(
     return url
 
 
-async def ensure_login(page: Page, login_mode: str) -> None:
+async def ensure_login(page: Page, login_mode: str, non_interactive: bool = False) -> None:
     await page.goto("https://www.naukri.com/", wait_until="domcontentloaded")
     # The React header often appears after DOMContentLoaded. Without this wait,
     # an expired session can briefly look authenticated because Login is not yet rendered.
@@ -345,8 +385,14 @@ async def ensure_login(page: Page, login_mode: str) -> None:
         if await email_login.count() and await email_login.is_visible():
             await email_login.click()
             await page.wait_for_timeout(500)
-        email = os.environ.get("NAUKRI_EMAIL") or input("Naukri email: ").strip()
-        password = os.environ.get("NAUKRI_PASSWORD") or getpass.getpass("Naukri password (hidden): ")
+        email = os.environ.get("NAUKRI_EMAIL", "").strip()
+        password = os.environ.get("NAUKRI_PASSWORD", "")
+        if non_interactive and (not email or not password):
+            raise SystemExit(
+                "This cloud profile needs its NAUKRI_EMAIL and NAUKRI_PASSWORD settings."
+            )
+        email = email or input("Naukri email: ").strip()
+        password = password or getpass.getpass("Naukri password (hidden): ")
         email_input = page.locator(
             "input[type='email'], input[name*='email' i], input[placeholder*='email' i], "
             "input[placeholder*='username' i]"
@@ -365,7 +411,24 @@ async def ensure_login(page: Page, login_mode: str) -> None:
         print("Choose any Naukri login method in the browser.")
 
     print("Complete any CAPTCHA yourself; the bot will not bypass it.")
-    input("Press Enter here only after your Naukri profile/home page is visible... ")
+    if non_interactive:
+        if login_mode != "email":
+            raise SystemExit(
+                "A saved Naukri session is required for non-email cloud login."
+            )
+        print("Waiting up to 60 seconds for cloud email login to complete.")
+        for _ in range(30):
+            await page.wait_for_timeout(2_000)
+            login = await first_visible(page.get_by_text(re.compile(r"^login$", re.I)))
+            if login is None:
+                break
+        else:
+            raise SystemExit(
+                "Naukri login needs CAPTCHA, OTP, or manual verification; "
+                "initialize this person's cloud browser session interactively."
+            )
+    else:
+        input("Press Enter here only after your Naukri profile/home page is visible... ")
     await page.goto("https://www.naukri.com/", wait_until="domcontentloaded")
     await page.wait_for_timeout(2_000)
     login = await first_visible(page.get_by_text(re.compile(r"^login$", re.I)))
@@ -436,8 +499,10 @@ async def load_search(page: Page, url: str, timeout_ms: int, retries: int) -> st
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
             state = await wait_for_search_results(page, timeout_ms)
-        except PlaywrightTimeoutError:
+        except (PlaywrightTimeoutError, PlaywrightError) as exc:
             state = "timeout"
+            if not isinstance(exc, PlaywrightTimeoutError):
+                print(f"Search navigation interrupted; retrying: {exc}")
         if state != "timeout":
             return state
         if attempt < retries:
@@ -504,11 +569,24 @@ async def click_apply_and_wait(page: Page, timeout_ms: int) -> str:
     button = await find_visible_apply_button(page)
     if button is None:
         return "missing"
-    await button.hover()
-    # Click exactly once. A retry while an undetected questionnaire is open can
-    # bypass its mandatory fields and make Naukri reject the application.
-    await button.click(timeout=10_000, no_wait_after=True)
-    return await wait_for_post_apply_state(page, timeout_ms)
+    # Naukri may navigate a short-lived tab to `/myapply/saveApply` and close
+    # it immediately. Capture that response so a successful application is not
+    # lost merely because the confirmation tab disappears before inspection.
+    successful_response = asyncio.Event()
+
+    def observe_response(response):
+        if successful_apply_response(response.url) and 200 <= response.status < 300:
+            successful_response.set()
+
+    page.context.on("response", observe_response)
+    try:
+        await button.hover()
+        # Click exactly once. A retry while an undetected questionnaire is open can
+        # bypass its mandatory fields and make Naukri reject the application.
+        await button.click(timeout=10_000, no_wait_after=True)
+        return await wait_for_post_apply_state(page, timeout_ms, successful_response)
+    finally:
+        page.context.remove_listener("response", observe_response)
 
 
 async def first_visible(locator):
@@ -563,10 +641,19 @@ def application_success_visible(body: str) -> bool:
 
 def successful_apply_response(url: str) -> bool:
     decoded_url = unquote(url)
-    if "/myapply/saveapply" not in decoded_url.casefold():
+    if not is_naukri_save_apply_url(url):
         return False
     statuses = [int(value) for value in re.findall(r'"[^"?]+"\s*:\s*(\d{3})', decoded_url)]
     return any(200 <= status < 300 and status != 292 for status in statuses)
+
+
+def is_naukri_save_apply_url(url: str) -> bool:
+    parsed = urlparse(url)
+    hostname = (parsed.hostname or "").casefold()
+    return (
+        (hostname == "naukri.com" or hostname.endswith(".naukri.com"))
+        and parsed.path.casefold() == "/myapply/saveapply"
+    )
 
 
 async def application_succeeded(page: Page, body: str | None = None) -> bool:
@@ -974,6 +1061,8 @@ def configured_experience_answer(question: str) -> str | None:
 
 def configured_profile_answer(question: str) -> str | None:
     normalized = question.casefold()
+    if any(term in normalized for term in ("notice period", "last working day", "lwd")):
+        return os.environ.get("NAUKRI_NOTICE_PERIOD_ANSWER", "").strip() or None
     if any(term in normalized for term in ("relocat", "location requirement")):
         return os.environ.get("NAUKRI_RELOCATION_ANSWER", "").strip() or None
     if any(
@@ -986,6 +1075,13 @@ def configured_profile_answer(question: str) -> str | None:
 
 def ask_user(question: str, options: list[str], multi_select: bool = False) -> str:
     print(f"\nRecruiter question: {question}")
+    if os.environ.get("NAUKRI_NON_INTERACTIVE", "").strip().casefold() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        print("No approved cloud answer is available; skipping this job.")
+        return ""
     if options:
         for index, option in enumerate(options, 1):
             print(f"  {index}. {option}")
@@ -1066,7 +1162,17 @@ async def handle_questionnaire(
         if answer is None:
             answer = await assistant.suggest(question, options, multi_select)
             source = "resume/AI"
-        if answer is None or (options and not answer_matches_options(answer, options)):
+        # Some recruiter widgets expose only a "Skip this question" button as
+        # an option while the actual answer is a free-text years field. Keep
+        # the configured numeric experience answer instead of mapping `1` to
+        # option 1 (which would incorrectly skip the question).
+        numeric_experience_answer = (
+            source == "profile experience"
+            and bool(re.fullmatch(r"\d+(?:\.\d+)?", str(answer or "")))
+        )
+        if answer is None or (
+            options and not answer_matches_options(answer, options) and not numeric_experience_answer
+        ):
             answer = await asyncio.to_thread(ask_user, question, options, multi_select)
             source = "user"
             if not answer:
@@ -1113,10 +1219,14 @@ async def handle_questionnaire(
     return "needs_input", "questionnaire exceeded 20 steps"
 
 
-async def wait_for_post_apply_state(page: Page, timeout_ms: int) -> str:
+async def wait_for_post_apply_state(
+    page: Page, timeout_ms: int, successful_response: asyncio.Event | None = None
+) -> str:
     """Wait for success in any tab, a profile prompt, or a recruiter question."""
     deadline = asyncio.get_running_loop().time() + timeout_ms / 1000
     while asyncio.get_running_loop().time() < deadline:
+        if successful_response is not None and successful_response.is_set():
+            return "applied"
         try:
             # Some direct applications open Naukri's `/myapply/saveApply`
             # confirmation in a new tab. Check every tab before inspecting the
@@ -1154,10 +1264,13 @@ async def wait_for_post_apply_state(page: Page, timeout_ms: int) -> str:
 async def apply_to_job(
     context: BrowserContext,
     job: Job,
+    config: dict[str, Any],
     submit: bool,
     bank: AnswerBank,
     assistant: AnswerAssistant,
     post_apply_timeout_ms: int,
+    post_apply_success_wait_seconds: float,
+    external_tab_wait_seconds: float,
 ) -> tuple[str, str]:
     existing_pages = set(context.pages)
     page = await context.new_page()
@@ -1169,6 +1282,9 @@ async def apply_to_job(
             # Naukri can keep background requests open even after the usable
             # job page renders. Continue with visible-state detection.
             pass
+        accepted, reason = matches(job, config)
+        if not accepted:
+            return "skipped", reason
         action = await wait_for_job_action(page, detail_timeout_ms)
         if action == "timeout":
             return "error", "job detail stayed in loading state for 60s"
@@ -1187,6 +1303,7 @@ async def apply_to_job(
 
         post_apply_state = await click_apply_and_wait(page, post_apply_timeout_ms)
         if post_apply_state == "applied":
+            await asyncio.sleep(post_apply_success_wait_seconds)
             return "applied", "application submitted"
         if post_apply_state == "missing":
             return "error", "visible Apply button disappeared before it could be clicked"
@@ -1195,12 +1312,21 @@ async def apply_to_job(
         if post_apply_state == "timeout":
             await capture_diagnostic(page, f"post-apply-timeout-{job.company}-{job.title}")
             return "error", f"nothing appeared within {post_apply_timeout_ms // 1000}s after Apply"
-        return await handle_questionnaire(page, bank, assistant, post_apply_timeout_ms)
+        result = await handle_questionnaire(page, bank, assistant, post_apply_timeout_ms)
+        if result[0] == "applied":
+            await asyncio.sleep(post_apply_success_wait_seconds)
+        return result
     except PlaywrightTimeoutError:
         return "error", "page timed out"
+    except PlaywrightError as exc:
+        # Naukri occasionally closes a questionnaire/confirmation tab during
+        # navigation. Preserve the run and let the next job continue.
+        return "error", f"Naukri closed the application tab: {exc}"
     finally:
         # Close the job-detail page and any confirmation popup it opened, but
         # preserve the search page and other tabs that existed before this job.
+        if external_tab_wait_seconds > 0:
+            await asyncio.sleep(external_tab_wait_seconds)
         for owned_page in list(context.pages):
             if owned_page not in existing_pages and not owned_page.is_closed():
                 await owned_page.close()
@@ -1214,9 +1340,11 @@ def counts_toward_application_limit(status: str) -> bool:
 async def run(args: argparse.Namespace) -> int:
     load_dotenv()
     config = load_config(Path(args.config))
-    history_path = Path(config.get("history_file", "applied_jobs.json"))
+    history_path = persistent_path(config.get("history_file", "applied_jobs.json"))
     history = load_history(history_path)
-    answer_bank = AnswerBank(Path(config.get("answers_file", "answers.json")))
+    answer_bank = AnswerBank(
+        persistent_path(config.get("answers_file", "answers.json"))
+    )
     answer_assistant = AnswerAssistant(config)
     if answer_assistant.azure_enabled:
         print(f"AI answers enabled through Azure deployment: {answer_assistant.azure_deployment}")
@@ -1233,6 +1361,11 @@ async def run(args: argparse.Namespace) -> int:
     search_timeout_ms = int(config.get("search_load_timeout_seconds", 60)) * 1000
     search_retries = int(config.get("search_load_retries", 2))
     post_apply_timeout_ms = int(config.get("post_apply_timeout_seconds", 30)) * 1000
+    post_apply_success_wait_seconds = float(
+        config.get("post_apply_success_wait_seconds", 5)
+    )
+    external_tab_wait_seconds = float(config.get("external_tab_wait_seconds", 5))
+    between_jobs_delay_seconds = float(config.get("between_jobs_delay_seconds", 8))
     experience_years = experience_years_from_env()
     if experience_years is not None:
         print(f"Experience filter: {experience_years} year(s)")
@@ -1248,17 +1381,33 @@ async def run(args: argparse.Namespace) -> int:
     async with async_playwright() as playwright:
         launch_options: dict[str, Any] = {
             "user_data_dir": str(
-                Path(config.get("profile_dir", "data/browser/profile")).resolve()
+                persistent_path(
+                    config.get("profile_dir", "data/browser/profile")
+                ).resolve()
             ),
-            "headless": bool(config.get("headless", False)),
+            "headless": bool(config.get("headless", False))
+            or os.environ.get("NAUKRI_HEADLESS", "").strip().casefold()
+            in {"1", "true", "yes"},
             "slow_mo": int(config.get("slow_mo_ms", 250)),
         }
-        browser_channel = str(config.get("browser_channel", "")).strip()
+        if "NAUKRI_BROWSER_CHANNEL" in os.environ:
+            browser_channel = os.environ["NAUKRI_BROWSER_CHANNEL"].strip()
+        else:
+            browser_channel = str(config.get("browser_channel", "")).strip()
         if browser_channel:
             launch_options["channel"] = browser_channel
         context = await playwright.chromium.launch_persistent_context(**launch_options)
+        url_debug_log = persistent_path(
+            config.get("debug_url_log", "data/debug/opened_urls.jsonl")
+        )
+        enable_url_debug_log(context, url_debug_log)
+        print(f"URL debug log: {url_debug_log}")
         page = context.pages[0] if context.pages else await context.new_page()
-        await ensure_login(page, args.login_mode)
+        await ensure_login(page, args.login_mode, args.non_interactive)
+        # Naukri can replace the login tab during redirect and close the
+        # original page. Always continue with a live page after login.
+        if page.is_closed():
+            page = context.pages[-1] if context.pages else await context.new_page()
         applied_count = 0
         try:
             for search in config["searches"]:
@@ -1286,6 +1435,14 @@ async def run(args: argparse.Namespace) -> int:
                         search_timeout_ms,
                         search_retries,
                     )
+                    if page.is_closed():
+                        page = context.pages[-1] if context.pages else await context.new_page()
+                        state = await load_search(
+                            page,
+                            current_search_url,
+                            search_timeout_ms,
+                            search_retries,
+                        )
                     if state == "timeout":
                         await capture_diagnostic(
                             page, f"search-timeout-{keywords}-{location}-page-{page_number}"
@@ -1298,7 +1455,20 @@ async def run(args: argparse.Namespace) -> int:
                     if state == "empty":
                         print(f"Page {page_number} has no jobs; pagination complete")
                         break
-                    jobs = await collect_jobs(page)
+                    try:
+                        jobs = await collect_jobs(page)
+                    except PlaywrightError as exc:
+                        if context.is_closed():
+                            raise
+                        page = context.pages[-1] if context.pages else await context.new_page()
+                        print(f"Result tab closed while reading cards; retrying page: {exc}")
+                        state = await load_search(
+                            page,
+                            current_search_url,
+                            search_timeout_ms,
+                            search_retries,
+                        )
+                        jobs = await collect_jobs(page) if state == "results" else []
                     if not jobs:
                         print(f"Page {page_number} has no rendered job cards; pagination complete")
                         break
@@ -1312,25 +1482,37 @@ async def run(args: argparse.Namespace) -> int:
                     seen_page_signatures.add(page_signature)
                     print(f"Found {len(jobs)} rendered job cards on page {page_number}")
                     for job in jobs:
+                        append_url_debug_event(
+                            url_debug_log, "job_card", job.url
+                        )
                         if applied_count >= max_jobs:
                             break
                         if job.key in history:
                             previous_status = str(history[job.key].get("status", "processed")).upper()
                             print(f"HISTORY      {job.title} @ {job.company} — {previous_status}")
-                            continue
-                        accepted, reason = matches(job, config)
-                        if not accepted:
-                            print(f"SKIP  {job.title} @ {job.company} ({reason})")
+                            append_url_debug_event(
+                                url_debug_log,
+                                f"job_history_{previous_status.casefold()}",
+                                job.url,
+                            )
+                            if between_jobs_delay_seconds > 0:
+                                await asyncio.sleep(between_jobs_delay_seconds)
                             continue
                         status, detail = await apply_to_job(
                             context,
                             job,
+                            config,
                             args.submit,
                             answer_bank,
                             answer_assistant,
                             post_apply_timeout_ms,
+                            post_apply_success_wait_seconds,
+                            external_tab_wait_seconds,
                         )
                         print(f"{status.upper():<12} {job.title} @ {job.company} — {detail}")
+                        append_url_debug_event(
+                            url_debug_log, f"job_result_{status}", job.url
+                        )
                         # Do not suppress future attempts after an error or manual-question stop.
                         if status in {"applied", "already_applied", "skipped", "external"}:
                             history[job.key] = {
@@ -1346,6 +1528,8 @@ async def run(args: argparse.Namespace) -> int:
                         if counts_toward_application_limit(status):
                             applied_count += 1
                             print(f"APPLICATION_COUNT {applied_count}/{max_jobs}")
+                        if between_jobs_delay_seconds > 0:
+                            await asyncio.sleep(between_jobs_delay_seconds)
             if applied_count >= max_jobs:
                 print(
                     f"\nRUN_LIMIT Reached max_jobs_per_run={max_jobs} successful "
@@ -1365,6 +1549,11 @@ def parse_args() -> argparse.Namespace:
         choices=("phone", "google", "email", "manual"),
         default="manual",
         help="guide the first login using phone OTP, Google, email/password, or manually",
+    )
+    parser.add_argument(
+        "--non-interactive",
+        action="store_true",
+        help="fail instead of prompting when cloud login or an answer needs a person",
     )
     return parser.parse_args()
 

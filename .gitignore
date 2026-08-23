@@ -4,4 +4,6 @@ __pycache__/
 data/browser/
 data/history/
 data/answers/
+data/api/
+data/debug/
 diagnostics/

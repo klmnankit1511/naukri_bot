@@ -179,3 +179,28 @@ Search and job-detail pages use condition-based waits rather than fixed delays. 
 After clicking Apply—and after each questionnaire Save—the bot waits up to `post_apply_timeout_seconds` for the next drawer message or completion state. This defaults to 30 seconds and does not add an unconditional 30-second delay when the next state becomes ready sooner.
 
 On a search or post-Apply timeout, the bot saves both a screenshot and the rendered HTML under `diagnostics/screenshots/`. Playwright already reads the live DOM in the background, so Selenium is not required for this diagnostic capture.
+
+## Azure trigger API
+
+The container exposes authenticated `POST /1`, `POST /2`, and `POST /3`
+endpoints for Ankit, Amisha, and Seema respectively. A request adds the profile
+to one serial queue and returns HTTP 202 with a `run_id`; it does not keep the
+HTTP request open while Playwright runs. Use `GET /runs/{run_id}` to inspect a
+run and `GET /health` for the public health check.
+
+```bash
+curl -X POST -H "x-api-key: $API_KEY" https://YOUR-APP.azurewebsites.net/1
+curl -H "x-api-key: $API_KEY" https://YOUR-APP.azurewebsites.net/runs/RUN_ID
+```
+
+Cloud runs are headless and non-interactive. Unknown recruiter questions are
+skipped safely. A new or expired Naukri session can still require CAPTCHA, OTP,
+or manual verification; the bot does not bypass those checks. Configure
+`PERSON_1_EMAIL`, `PERSON_1_PASSWORD`, and equivalent variables for Persons 2
+and 3 as Azure Web App settings. Each profile uses separate persistent storage
+under `NAUKRI_DATA_ROOT`.
+
+The deployment workflow builds the Playwright container, pushes it to Azure
+Container Registry, and deploys it to Azure Web App. The scheduler workflow
+queues `/1`, `/2`, and `/3` in that order every day at 09:00 Asia/Kolkata and
+also supports manual dispatch from GitHub Actions.
