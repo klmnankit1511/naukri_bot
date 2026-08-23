@@ -30,13 +30,25 @@ jobs:
         with:
           context: .
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
             ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
 
-      - name: Deploy image to Azure Web App
-        uses: azure/webapps-deploy@v3
+      - name: Sign in to Azure
+        uses: azure/login@v2
         with:
-          app-name: ${{ env.WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy image to Azure Web App
+        run: |
+          az webapp config container set \
+            --resource-group rg-naukri-bot \
+            --name "${WEBAPP_NAME}" \
+            --container-image-name "${{ secrets.ACR_LOGIN_SERVER }}/${IMAGE_NAME}:${GITHUB_SHA}" \
+            --output none
+          az webapp restart \
+            --resource-group rg-naukri-bot \
+            --name "${WEBAPP_NAME}" \
+            --output none
