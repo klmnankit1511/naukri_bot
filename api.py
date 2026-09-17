@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Authenticated HTTP queue for the three Naukri profiles."""
+"""Authenticated HTTP queue for the Naukri profiles."""
 
 from __future__ import annotations
 
@@ -23,9 +23,8 @@ API_STATE_DIR = DATA_ROOT / "data" / "api"
 RUNS_FILE = API_STATE_DIR / "runs.json"
 LOGS_DIR = API_STATE_DIR / "logs"
 PROFILE_CONFIGS = {
-    1: Path(os.environ.get("PERSON_1_CONFIG", "config.yaml")),
-    2: Path(os.environ.get("PERSON_2_CONFIG", "config.person2.yaml")),
-    3: Path(os.environ.get("PERSON_3_CONFIG", "config.person3.yaml")),
+    1: Path(os.environ.get("PERSON_1_CONFIG", "config.person2.yaml")),
+    2: Path(os.environ.get("PERSON_2_CONFIG", "config.yaml")),
 }
 PROFILE_ENV_KEYS = (
     "NAUKRI_EMAIL",
@@ -73,7 +72,7 @@ def profile_environment(person: int) -> dict[str, str]:
         profile_value = os.environ.get(profile_key, "").strip()
         if profile_value:
             environment[generic_key] = profile_value
-        elif person != 1:
+        else:
             environment.pop(generic_key, None)
     environment.update(
         {
@@ -232,11 +231,6 @@ async def trigger_person_1() -> dict[str, Any]:
 @app.post("/2", status_code=status.HTTP_202_ACCEPTED, dependencies=[Depends(require_api_key)])
 async def trigger_person_2() -> dict[str, Any]:
     return enqueue(2)
-
-
-@app.post("/3", status_code=status.HTTP_202_ACCEPTED, dependencies=[Depends(require_api_key)])
-async def trigger_person_3() -> dict[str, Any]:
-    return enqueue(3)
 
 
 @app.get("/runs/{run_id}", dependencies=[Depends(require_api_key)])

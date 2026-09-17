@@ -75,6 +75,9 @@ search_load_retries: 2
 post_apply_timeout_seconds: 30
 post_apply_success_wait_seconds: 3
 between_jobs_delay_seconds: 2
+minimum_keyword_match_ratio: 0.5
+company_application_limits:
+  Infosys: 3
 external_tab_wait_seconds: 2
 headless: false
 slow_mo_ms: 300
@@ -189,88 +192,3 @@ resume_summary: >-
 #   Docker Compose, exception handling, input validation, DTO-based
 #   architecture, logging, monitoring, and root cause analysis.
 #   Her education is a B.Tech in Computer Science and Engineering.
-
-
-# searches:
-#   - keywords: "Software Engineer Python "
-#     location: "Bengaluru"
-#   - keywords: "Python Developer"
-#     location: "Bengaluru"
-#   - keywords: "Machine Learning Engineer Python"
-#     location: "Bengaluru"
-#   - keywords: "AI Engineer"
-#     location: "Bengaluru"
-#   - keywords: "Software Engineer"
-#     location: "Any"
-#   - keywords: "Python Developer"
-#     location: "Any"
-#
-# include_keywords:
-#   - python
-#   - embedded
-#   - fastapi
-#   - machine learning
-#   - pytorch
-#   - artificial intelligence
-# exclude_keywords:
-#   - senior
-#   - intern
-#   - internship
-#   - trainee
-#   - fresher
-#   - data analyst
-#   - business analyst
-#   - data annotation
-#   - content
-#   - sales
-#   - marketing
-#   - support engineer
-#   - technical support
-#   - frontend
-#   - react
-#   - node.js
-#   - java developer
-#   - odoo
-#   - erp implementation
-#
-# max_jobs_per_run: 30
-# search_load_timeout_seconds: 60
-# search_load_retries: 2
-# post_apply_timeout_seconds: 30
-# between_jobs_delay_seconds: 8
-# headless: false
-# slow_mo_ms: 250
-# browser_channel: chrome
-#
-# These paths must stay unique for each person.
-# profile_dir: data/browser/profile
-# history_file: data/history/applied_jobs.json
-# answers_file: data/answers/answers.json
-#
-# openai_model: gpt-4o-mini
-# resume_summary: >-
-#   Seema Horo is a Software Engineer at Tata Advanced Systems since July 2025,
-#   developing safety-critical embedded software in Python and C++ for avionics
-#   subsystems. She implements Linux user-space modules, IOCTL APIs, multithreaded
-#   communication layers, UART, GPIO and Timer drivers, and RTOS modules for
-#   MALE-class UAV systems. She uses perf, valgrind and gprof for system profiling,
-#   and JTAG and logic analyzers for hardware debugging. She creates UML diagrams,
-#   maintains requirement traceability under DO-178C and DO-254 processes, and
-#   supports SIL/HIL validation for deterministic real-time execution. She was an
-#   Assistant System Engineer at Tata Consultancy Services from November 2021 to
-#   September 2022, where she resolved more than 300 technical issues using backend
-#   debugging, log analysis and workflow optimization, and worked with APIs, SQL
-#   automation and system communication modules. She earned an M.Tech in Artificial
-#   Intelligence from IIT Patna in 2025 with a CGPA of 7.5/10 and a B.Tech in
-#   Computer Science from Ramgarh Engineering College in 2021 with a CGPA of
-#   7.89/10. Her skills include Python, C++, SQL, Flask, FastAPI, SQLAlchemy,
-#   Pydantic, PyTorch, CNNs, GDB, AWS, Git, CMake, GoogleTest, Elasticsearch, OOP,
-#   design patterns, UML and requirement traceability. Her multimodal early disease
-#   detection project used Python, PyTorch, NumPy and Pandas to combine CNN-based
-#   MRI features with clinical text embeddings. Her blockchain-security project
-#   used LangChain, LlamaIndex, Transformers, RAG and vector embeddings for smart
-#   contract anomaly detection. She has solved more than 350 LeetCode problems and
-#   conducted an AI workshop for more than 300 students. She is based in Bangalore,
-#   Karnataka. Do not infer salary, notice period, availability, relocation
-#   preference, work authorization, or facts not stated here; ask the user when an
-#   application requires them.

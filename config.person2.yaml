@@ -53,7 +53,10 @@ search_load_timeout_seconds: 60
 search_load_retries: 2
 post_apply_timeout_seconds: 30
 post_apply_success_wait_seconds: 5
-between_jobs_delay_seconds: 8
+between_jobs_delay_seconds: 2
+minimum_keyword_match_ratio: 0.5
+company_application_limits:
+  Infosys: 3
 headless: false
 slow_mo_ms: 250
 browser_channel: chrome

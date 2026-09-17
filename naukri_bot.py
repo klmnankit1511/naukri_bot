@@ -256,14 +256,11 @@ class AnswerAssistant:
 
 def matches(job: Job, config: dict[str, Any]) -> tuple[bool, str]:
     haystack = f"{job.title} {job.company} {job.text}".casefold()
-    includes = [str(x).casefold() for x in config.get("include_keywords", []) if str(x).strip()]
     excludes = [str(x).casefold() for x in config.get("exclude_keywords", []) if str(x).strip()]
     blocked = next((word for word in excludes if word in haystack), None)
     if blocked:
         return False, f"excluded keyword: {blocked}"
-    if includes and not any(word in haystack for word in includes):
-        return False, "no include keyword matched"
-    return True, "matched"
+    return True, "eligible (technology matching disabled)"
 
 
 FRESHNESS_DAY_CHOICES = {1, 3, 7, 15, 30}
@@ -1366,6 +1363,11 @@ async def run(args: argparse.Namespace) -> int:
     )
     external_tab_wait_seconds = float(config.get("external_tab_wait_seconds", 5))
     between_jobs_delay_seconds = float(config.get("between_jobs_delay_seconds", 8))
+    company_limits = {
+        str(company).casefold(): int(limit)
+        for company, limit in config.get("company_application_limits", {}).items()
+    }
+    company_applied_counts: dict[str, int] = {}
     experience_years = experience_years_from_env()
     if experience_years is not None:
         print(f"Experience filter: {experience_years} year(s)")
@@ -1498,6 +1500,14 @@ async def run(args: argparse.Namespace) -> int:
                             if between_jobs_delay_seconds > 0:
                                 await asyncio.sleep(between_jobs_delay_seconds)
                             continue
+                        company_key = job.company.casefold()
+                        company_limit = next(
+                            (limit for company, limit in company_limits.items() if company in company_key),
+                            None,
+                        )
+                        if company_limit is not None and company_applied_counts.get(company_key, 0) >= company_limit:
+                            print(f"LIMIT       {job.title} @ {job.company} — company limit {company_limit} reached")
+                            continue
                         status, detail = await apply_to_job(
                             context,
                             job,
@@ -1527,6 +1537,7 @@ async def run(args: argparse.Namespace) -> int:
                             save_history(history_path, history)
                         if counts_toward_application_limit(status):
                             applied_count += 1
+                            company_applied_counts[company_key] = company_applied_counts.get(company_key, 0) + 1
                             print(f"APPLICATION_COUNT {applied_count}/{max_jobs}")
                         if between_jobs_delay_seconds > 0:
                             await asyncio.sleep(between_jobs_delay_seconds)

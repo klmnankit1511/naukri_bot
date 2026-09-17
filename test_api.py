@@ -35,16 +35,16 @@ class ApiTests(unittest.TestCase):
     def test_trigger_requires_api_key(self):
         self.assertEqual(self.client.post("/1").status_code, 401)
 
-    def test_three_routes_map_to_three_people_in_order(self):
+    def test_two_routes_map_to_two_people_in_order(self):
         with patch.object(self.api, "queue") as mocked_queue:
             responses = [
                 self.client.post(f"/{person}", headers={"x-api-key": "test-secret"})
-                for person in (1, 2, 3)
+                for person in (1, 2)
             ]
-        self.assertEqual([response.status_code for response in responses], [202, 202, 202])
-        self.assertEqual([response.json()["person"] for response in responses], [1, 2, 3])
+        self.assertEqual([response.status_code for response in responses], [202, 202])
+        self.assertEqual([response.json()["person"] for response in responses], [1, 2])
         queued_run_ids = [call.args[0] for call in mocked_queue.put_nowait.call_args_list]
-        self.assertEqual(len(queued_run_ids), 3)
+        self.assertEqual(len(queued_run_ids), 2)
 
     def test_duplicate_profile_run_is_not_queued_twice(self):
         with patch.object(self.api, "queue") as mocked_queue:
