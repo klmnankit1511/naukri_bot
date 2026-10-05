@@ -23,7 +23,6 @@ API_STATE_DIR = DATA_ROOT / "data" / "api"
 RUNS_FILE = API_STATE_DIR / "runs.json"
 LOGS_DIR = API_STATE_DIR / "logs"
 PROFILE_CONFIGS = {
-    1: Path(os.environ.get("PERSON_1_CONFIG", "config.person2.yaml")),
     2: Path(os.environ.get("PERSON_2_CONFIG", "config.yaml")),
 }
 PROFILE_ENV_KEYS = (
@@ -221,11 +220,6 @@ async def health() -> dict[str, Any]:
         None,
     )
     return {"status": "ok", "queued": queue.qsize(), "current": current}
-
-
-@app.post("/1", status_code=status.HTTP_202_ACCEPTED, dependencies=[Depends(require_api_key)])
-async def trigger_person_1() -> dict[str, Any]:
-    return enqueue(1)
 
 
 @app.post("/2", status_code=status.HTTP_202_ACCEPTED, dependencies=[Depends(require_api_key)])

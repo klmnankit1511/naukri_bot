@@ -1,4 +1,4 @@
-name: Daily ordered profile run
+name: Daily profile run
 
 on:
   schedule:
@@ -13,13 +13,13 @@ jobs:
   enqueue-profiles:
     runs-on: ubuntu-latest
     steps:
-      - name: Queue /1 and /2 in order
+      - name: Queue /2
         env:
           API_BASE_URL: ${{ secrets.NAUKRI_API_BASE_URL }}
           API_KEY: ${{ secrets.NAUKRI_API_KEY }}
         run: |
           set -euo pipefail
-          for person in 1 2; do
+          for person in 2; do
             curl --fail --silent --show-error \
               --retry 3 --retry-all-errors \
               --request POST \

@@ -182,25 +182,25 @@ On a search or post-Apply timeout, the bot saves both a screenshot and the rende
 
 ## Azure trigger API
 
-The container exposes authenticated `POST /1` and `POST /2` endpoints for
-Amisha and Ankit respectively. A request adds the profile to one serial queue
+The container exposes an authenticated `POST /2` endpoint for Ankit.
+A request adds the profile to one serial queue
 and returns HTTP 202 with a `run_id`; it does not keep the HTTP request open
 while Playwright runs. Use `GET /runs/{run_id}` to inspect a run and
 `GET /health` for the public health check.
 
 ```bash
-curl -X POST -H "x-api-key: $API_KEY" https://YOUR-APP.azurewebsites.net/1
+curl -X POST -H "x-api-key: $API_KEY" https://YOUR-APP.azurewebsites.net/2
 curl -H "x-api-key: $API_KEY" https://YOUR-APP.azurewebsites.net/runs/RUN_ID
 ```
 
 Cloud runs are headless and non-interactive. Unknown recruiter questions are
 skipped safely. A new or expired Naukri session can still require CAPTCHA, OTP,
 or manual verification; the bot does not bypass those checks. Configure
-`PERSON_1_EMAIL`, `PERSON_1_PASSWORD`, and equivalent variables for Person 2
+`PERSON_2_EMAIL` and `PERSON_2_PASSWORD`
 as Azure Web App settings. Each profile uses separate persistent storage
 under `NAUKRI_DATA_ROOT`.
 
 The deployment workflow builds the Playwright container, pushes it to Azure
 Container Registry, and deploys it to Azure Web App. The scheduler workflow
-queues `/1` and `/2` in that order every day at 09:00 Asia/Kolkata and also
+queues `/2` every day at 09:00 Asia/Kolkata and also
 supports manual dispatch from GitHub Actions.
