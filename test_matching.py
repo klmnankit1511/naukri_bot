@@ -59,7 +59,7 @@ class MatchingTests(unittest.TestCase):
         with patch.dict("os.environ", {"NAUKRI_EXPERIENCE_YEARS": "3"}):
             self.assertEqual(
                 configured_experience_answer(
-                    "How many years of experience do you have in Java?"
+                    "How many years of experience do you have in Python?"
                 ),
                 "3",
             )
@@ -116,7 +116,7 @@ class MatchingTests(unittest.TestCase):
     def test_search_url_includes_freshness(self):
         self.assertIn(
             "jobAge=3",
-            search_url("Java Developer", "Bengaluru", experience_years=1, freshness_days=3),
+            search_url("Python Developer", "Bengaluru", experience_years=1, freshness_days=3),
         )
 
     def test_search_url_matches_naukri_experience_format(self):
