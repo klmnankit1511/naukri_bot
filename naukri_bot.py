@@ -11,7 +11,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -1058,8 +1058,16 @@ def configured_experience_answer(question: str) -> str | None:
 
 def configured_profile_answer(question: str) -> str | None:
     normalized = question.casefold()
-    if any(term in normalized for term in ("notice period", "last working day", "lwd")):
-        return os.environ.get("NAUKRI_NOTICE_PERIOD_ANSWER", "").strip() or None
+    if normalized.strip() in {"salutation", "title", "prefix"}:
+        return "Mr."
+    if any(term in normalized for term in ("last working day", "lwd")):
+        # User-approved policy: 15 days from today; weekend dates roll forward to Monday.
+        target = datetime.now().astimezone().date() + timedelta(days=15)
+        while target.weekday() >= 5:
+            target += timedelta(days=1)
+        return target.strftime("%-d %B %Y")
+    if "notice period" in normalized:
+        return "15 days (approximately 2 weeks)"
     if any(term in normalized for term in ("relocat", "location requirement")):
         return os.environ.get("NAUKRI_RELOCATION_ANSWER", "").strip() or None
     if any(

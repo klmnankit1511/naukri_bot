@@ -67,7 +67,7 @@ exclude_keywords:
   - customer support
 
 # Global limit across all searches in one run.
-max_jobs_per_run: 20
+max_jobs_per_run: 30
 # Naukri can render skeleton placeholders for a long time on slow connections.
 search_load_timeout_seconds: 60
 search_load_retries: 2
@@ -90,12 +90,21 @@ answers_file: data/answers/answers.json
 # Optional. Set OPENAI_API_KEY in your shell; never put the key in this file.
 openai_model: gpt-4o-mini
 resume_summary: >-
-  Ankit Kumar is a Bengaluru-based GenAI and Agentic AI Engineer with 4 years
-  of backend development experience and 1 year of hands-on AI/GenAI project
-  contribution. Current role: Senior Engineer - Engineering AI/ML at Ascendion
-  since April 2025. Previous backend roles: Mobile Programming from September
-  2024 to March 2025 and Techolution from May 2022 to September 2024. Skills:
-  Python, FastAPI, REST APIs, RAG, Agentic AI, LangChain, LangGraph, CrewAI,
-  Azure AI Foundry, Azure OpenAI, OpenAI, PyTorch, TensorFlow, AWS, Docker,
-  SQL, Java, Redis, RabbitMQ, Jenkins, Git, and backend microservices. B.Tech
-  in Computer Science and Engineering, completed in 2022.
+  Ankit Kumar is a Bengaluru-based Python and GenAI Engineer with 4+ years of
+  experience building enterprise backend services and AI applications. He has
+  worked at Ascendion as Senior Software Engineer in Generative AI Engineering
+  since April 2025, at Mobile Programming as Software Engineer from September
+  2024 to April 2025, and at Techolution as Python Developer from May 2022 to
+  September 2024. His explicit skills include Python, SQL, JavaScript, JSON,
+  XML, FastAPI, Flask, Node.js, Express.js, REST APIs, AsyncIO, Pydantic,
+  SQLAlchemy, WebSockets, microservices, Generative AI, agentic AI, LangChain,
+  Azure OpenAI, Azure AI Search, Azure AI Foundry, RAG, tool calling, prompt
+  engineering, DeepEval, Langfuse, AWS ECS, S3, Docker, CI/CD, Git, Azure
+  DevOps, SQL Server, PostgreSQL, MySQL, MongoDB, Redis, and RabbitMQ. His
+  explicit domain experience includes healthcare claims, appointment
+  scheduling, healthcare contact-center workflows, procurement automation, and
+  music-content metadata ingestion. He holds a B.Tech in Computer Science and
+  Engineering from Ramgarh Engineering College, completed June 2022, with a
+  CGPA of 8.0/10. He has built healthcare AI and multi-agent systems using
+  Azure OpenAI and LangChain, production monitoring with Langfuse, and Python
+  and FastAPI backend services.
